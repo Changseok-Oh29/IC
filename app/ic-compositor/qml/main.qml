@@ -65,28 +65,27 @@ WaylandCompositor {
 
     XdgShell {
         id: xdgShell
-        property int surfaceCount: 0
         onToplevelCreated: function(toplevel, xdgSurface) {
-            console.log("[XDG] Toplevel " + xdgShell.surfaceCount)
-            // Use index-based routing since app IDs aren't available
-            var size = Qt.size(1024, 600)
-            var layer = null
-            
-            if (xdgShell.surfaceCount === 0) {
-                size = Qt.size(280, 600)  // GearState
-                layer = "GearState"
-            } else if (xdgShell.surfaceCount === 1) {
-                size = Qt.size(400, 600)  // Speedometer
-                layer = "Speedometer"
-            } else if (xdgShell.surfaceCount === 2) {
-                size = Qt.size(280, 600)  // BatteryMeter
-                layer = "BatteryMeter"
+            function assign() {
+                var appId = (toplevel.appId || toplevel.title || "").toLowerCase()
+                if (!appId) return
+
+                console.log("[XDG] App connected: " + appId)
+
+                var size = Qt.size(280, 600)
+                if (appId.indexOf("speedometer") !== -1) {
+                    size = Qt.size(400, 600)
+                }
+
+                toplevel.sendFullscreen(size)
+                assignSurfaceByAppId(appId, xdgSurface)
             }
-            
-            console.log("[XDG-SIZE-" + layer + "] " + size.width + "x" + size.height)
-            toplevel.sendFullscreen(size)
-            assignSurfaceByIndex(xdgShell.surfaceCount, xdgSurface)
-            xdgShell.surfaceCount++
+
+            if (toplevel.appId) {
+                assign()
+            } else {
+                toplevel.appIdChanged.connect(assign)
+            }
         }
     }
 
@@ -101,13 +100,16 @@ WaylandCompositor {
     }
 
     function assignSurfaceByAppId(appId, surface) {
-        console.log("[ASSIGN-APP] " + appId)
-        if (appId.indexOf("GearState") !== -1) {
+        var id = appId.toLowerCase()
+        console.log("[ASSIGN-APP] " + id)
+        if (id.indexOf("gearstate") !== -1) {
             layerGearState.setSurface(surface)
-        } else if (appId.indexOf("Speedometer") !== -1) {
+        } else if (id.indexOf("speedometer") !== -1) {
             layerSpeedometer.setSurface(surface)
-        } else if (appId.indexOf("BatteryMeter") !== -1) {
+        } else if (id.indexOf("battery") !== -1) {
             layerBattery.setSurface(surface)
+        } else {
+            console.log("[ASSIGN-APP] Unknown app: " + id)
         }
     }
 
