@@ -35,6 +35,10 @@ while [ ! -S "$WAYLAND_SOCKET" ]; do
         exit 1
     fi
 done
+
+# Socket file exists but compositor needs more time to accept connections
+echo "[IC] wayland-2 socket appeared, waiting for compositor to be ready..."
+sleep 5
 echo "[IC] wayland-2 ready"
 
 # ── 3. Start IC Apps (all connect to wayland-2) ───────────────────────────────

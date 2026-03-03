@@ -43,6 +43,8 @@ services:
       - QT_WAYLAND_DISABLE_WINDOWDECORATION=1
       - QT_QUICK_BACKEND=software
       - QSG_RENDER_LOOP=basic
+      - LIBGL_ALWAYS_SOFTWARE=1
+      - QT_OPENGL=software
 
     volumes:
       - /run/user/${UID:-1000}:/run/user/${UID:-1000}
