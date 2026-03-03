@@ -1,0 +1,27 @@
+import "platform:/plugin/org.genivi.commonapi.someip/deployment/CommonAPI-SOMEIP_deployment_spec.fdepl"
+import "VehicleControl.fidl"
+
+define org.genivi.commonapi.someip.deployment for interface vehiclecontrol.VehicleControl {
+    SomeIpServiceID = 4660
+    
+    method setGearPosition {
+        SomeIpMethodID = 30000
+    }
+    
+    broadcast vehicleStateChanged {
+        SomeIpEventID = 40000
+        SomeIpEventGroups = { 4660 }
+    }
+    
+    broadcast gearDistanceChanged {
+        SomeIpEventID = 40001
+        SomeIpEventGroups = { 4660 }
+    }
+}
+
+define org.genivi.commonapi.someip.deployment for provider as VehicleControlService {
+    instance vehiclecontrol.VehicleControl {
+        InstanceId = "vehiclecontrol.VehicleControl"
+        SomeIpInstanceID = 22136
+    }
+}

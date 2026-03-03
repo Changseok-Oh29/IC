@@ -1,0 +1,12 @@
+<!DOCTYPE RCC>
+<RCC>
+  <qresource prefix="/">
+    <file alias="Design/Constants.qml">../qml/Design/Constants.qml</file>
+    <file alias="DesignContent/App.qml">../qml/DesignContent/App.qml</file>
+    <file alias="images/GaugeSpeedometer_Ticks2.png">images/GaugeSpeedometer_Ticks2.png</file>
+    <file alias="images/GaugeSpeedometer_Ticks1.png">images/GaugeSpeedometer_Ticks1.png</file>
+    <file alias="images/gaugeNeedleBig.png">images/gaugeNeedleBig.png</file>
+    <file alias="images/Gauge_Speed.png">images/Gauge_Speed.png</file>
+    <file alias="images/BottomPanel.png">images/BottomPanel.png</file>
+  </qresource>
+</RCC>

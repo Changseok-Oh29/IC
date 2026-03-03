@@ -1,0 +1,121 @@
+version: '3.8'
+
+# ─────────────────────────────────────────────────────────────────────────────
+# IC Container — Instrument Cluster
+#
+# Start order:
+#   vsomeip-routing → ic-compositor → gearstate → speedometer → batterymeter
+#
+# Prerequisites:
+#   1. Host running GNOME Wayland session (WAYLAND_DISPLAY=wayland-0)
+#   2. Build deps base image: docker build -f Dockerfile.deps -t ic-deps:latest ..
+#   3. docker compose up  (from this directory)
+#
+# Build context for all services is the IC repo root (../)
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+
+  # ── vsomeip Routing Manager ─────────────────────────────────────────────────
+  # Must start first. All IC apps connect to this daemon for SOME/IP routing.
+  vsomeip-routing:
+    image: ic-deps:latest
+    container_name: ic-vsomeip-routing
+    user: "${UID:-1000}:${GID:-1000}"
+    network_mode: host
+    volumes:
+      - /run/user/${UID:-1000}:/run/user/${UID:-1000}
+    environment:
+      - XDG_RUNTIME_DIR=/run/user/${UID:-1000}
+      - VSOMEIP_CONFIGURATION=/opt/ic-deps/etc/vsomeip/vsomeip.json
+    command: ["/opt/ic-deps/bin/routingmanagerd"]
+    restart: unless-stopped
+
+  # ── IC Compositor ────────────────────────────────────────────────────────────
+  # Nested Wayland compositor: connects to host wayland-0, creates wayland-2
+  ic-compositor:
+    build:
+      context: ../
+      dockerfile: app/ic-compositor/Dockerfile
+    image: ic-compositor:latest
+    container_name: ic-compositor
+    user: "${UID:-1000}:${GID:-1000}"
+    network_mode: host
+    depends_on:
+      - vsomeip-routing
+    environment:
+      - WAYLAND_DISPLAY=${WAYLAND_DISPLAY:-wayland-0}
+      - XDG_RUNTIME_DIR=/run/user/${UID:-1000}
+      - QT_QPA_PLATFORM=wayland
+      - QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+      - QT_QUICK_BACKEND=software
+      - QSG_RENDER_LOOP=basic
+    volumes:
+      - /run/user/${UID:-1000}:/run/user/${UID:-1000}
+    restart: unless-stopped
+
+  # ── GearState App ────────────────────────────────────────────────────────────
+  gearstate-app:
+    build:
+      context: ../
+      dockerfile: app/gearstate-app/Dockerfile
+    image: ic-gearstate:latest
+    container_name: ic-gearstate
+    user: "${UID:-1000}:${GID:-1000}"
+    network_mode: host
+    depends_on:
+      - ic-compositor
+    environment:
+      - WAYLAND_DISPLAY=wayland-2
+      - XDG_RUNTIME_DIR=/run/user/${UID:-1000}
+      - QT_QPA_PLATFORM=wayland
+      - QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+      - QT_QUICK_BACKEND=software
+      - QSG_RENDER_LOOP=basic
+    volumes:
+      - /run/user/${UID:-1000}:/run/user/${UID:-1000}
+    restart: unless-stopped
+
+  # ── Speedometer App ──────────────────────────────────────────────────────────
+  speedometer-app:
+    build:
+      context: ../
+      dockerfile: app/speedometer-app/Dockerfile
+    image: ic-speedometer:latest
+    container_name: ic-speedometer
+    user: "${UID:-1000}:${GID:-1000}"
+    network_mode: host
+    depends_on:
+      - ic-compositor
+    environment:
+      - WAYLAND_DISPLAY=wayland-2
+      - XDG_RUNTIME_DIR=/run/user/${UID:-1000}
+      - QT_QPA_PLATFORM=wayland
+      - QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+      - QT_QUICK_BACKEND=software
+      - QSG_RENDER_LOOP=basic
+    volumes:
+      - /run/user/${UID:-1000}:/run/user/${UID:-1000}
+    restart: unless-stopped
+
+  # ── BatteryMeter App ─────────────────────────────────────────────────────────
+  batterymeter-app:
+    build:
+      context: ../
+      dockerfile: app/batterymeter-app/Dockerfile
+    image: ic-batterymeter:latest
+    container_name: ic-batterymeter
+    user: "${UID:-1000}:${GID:-1000}"
+    network_mode: host
+    depends_on:
+      - ic-compositor
+    environment:
+      - WAYLAND_DISPLAY=wayland-2
+      - XDG_RUNTIME_DIR=/run/user/${UID:-1000}
+      - QT_QPA_PLATFORM=wayland
+      - QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+      - QT_QUICK_BACKEND=software
+      - QSG_RENDER_LOOP=basic
+    volumes:
+      - /run/user/${UID:-1000}:/run/user/${UID:-1000}
+    restart: unless-stopped

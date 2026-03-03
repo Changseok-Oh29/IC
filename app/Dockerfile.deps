@@ -1,0 +1,62 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Dockerfile.deps — IC Middleware Base Image
+#
+# Builds: vsomeip 3.5.x + capicxx-core-runtime 3.2.x + capicxx-someip-runtime
+# Installs to: /opt/ic-deps/
+# Also installs: routingmanagerd (vsomeip routing daemon)
+#
+# Build once, reuse in all app Dockerfiles:
+#   docker build -f app/Dockerfile.deps -t ic-deps:latest .
+#
+# Target: JetPack 6.2.1 (Ubuntu 22.04, arm64)
+# ─────────────────────────────────────────────────────────────────────────────
+FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV INSTALL_PREFIX=/opt/ic-deps
+
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    cmake \
+    pkg-config \
+    git \
+    libboost-system-dev \
+    libboost-thread-dev \
+    libboost-filesystem-dev \
+    libboost-log-dev \
+    libssl-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# ── 1. vsomeip ────────────────────────────────────────────────────────────────
+COPY ./deps/vsomeip /build/vsomeip/
+WORKDIR /build/vsomeip
+RUN cmake -B build -S . \
+        -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX} \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DENABLE_SIGNAL_HANDLING=1 \
+        -DBUILD_EXAMPLES=ON \
+        -DBUILD_TESTS=OFF \
+    && cmake --build build -j$(nproc) \
+    && cmake --install build \
+    && cp build/examples/routingmanagerd/routingmanagerd ${INSTALL_PREFIX}/bin/
+
+# ── 2. capicxx-core-runtime ───────────────────────────────────────────────────
+COPY ./deps/capicxx-core-runtime /build/capicxx-core-runtime/
+WORKDIR /build/capicxx-core-runtime
+RUN cmake -B build -S . \
+        -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX} \
+        -DCMAKE_PREFIX_PATH=${INSTALL_PREFIX} \
+        -DCMAKE_BUILD_TYPE=Release \
+    && cmake --build build -j$(nproc) \
+    && cmake --install build
+
+# ── 3. capicxx-someip-runtime ─────────────────────────────────────────────────
+COPY ./deps/capicxx-someip-runtime /build/capicxx-someip-runtime/
+WORKDIR /build/capicxx-someip-runtime
+RUN cmake -B build -S . \
+        -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX} \
+        -DCMAKE_PREFIX_PATH=${INSTALL_PREFIX} \
+        -DUSE_INSTALLED_COMMONAPI=ON \
+        -DCMAKE_BUILD_TYPE=Release \
+    && cmake --build build -j$(nproc) \
+    && cmake --install build
