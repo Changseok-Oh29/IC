@@ -1,0 +1,50 @@
+version: '3.8'
+
+# ─────────────────────────────────────────────────────────────────────────────
+# IC Cluster — Single Container Mode
+#
+# All IC apps run as processes inside one container.
+# vsomeip-routing runs on the HOST as a systemd service (not here).
+#
+# Setup host vsomeip-routing first:
+#   cd ~/IC && bash host/install-vsomeip-routing.sh
+#   sudo systemctl start vsomeip-routing
+#
+# Then run:
+#   docker compose -f docker-compose.cluster.yml up --build
+#
+# cgroups:
+#   cpuset    → Core 0, 1 dedicated to IC
+#   cpu_shares → 1024 (high, HU would use lower value e.g. 512)
+#   oom_score_adj → -1000 (protected from OOM killer)
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+
+  ic-cluster:
+    build:
+      context: ../
+      dockerfile: app/ic-cluster/Dockerfile
+    image: ic-cluster:latest
+    container_name: ic-cluster
+
+    user: "${UID:-1000}:${GID:-1000}"
+    network_mode: host
+
+    # ── Safety-critical resource isolation ────────────────────────────────────
+    cpuset: "0,1"        # dedicated CPU cores for IC
+    cpu_shares: 1024     # high scheduling priority (HU will use 512)
+    oom_score_adj: -1000 # kernel will never OOM-kill IC container
+
+    environment:
+      - WAYLAND_DISPLAY=${WAYLAND_DISPLAY:-wayland-0}
+      - XDG_RUNTIME_DIR=/run/user/${UID:-1000}
+      - QT_QPA_PLATFORM=wayland
+      - QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+      - QT_QUICK_BACKEND=software
+      - QSG_RENDER_LOOP=basic
+
+    volumes:
+      - /run/user/${UID:-1000}:/run/user/${UID:-1000}
+
+    restart: unless-stopped
