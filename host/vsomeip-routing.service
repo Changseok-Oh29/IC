@@ -6,7 +6,7 @@ Before=docker.service
 [Service]
 Type=simple
 ExecStart=/opt/ic-deps/bin/routingmanagerd
-Environment=VSOMEIP_CONFIGURATION=/etc/vsomeip/vsomeip-routing.json
+Environment=VSOMEIP_CONFIGURATION=__REPO_PATH__/host/vsomeip-routing.json
 Environment=LD_LIBRARY_PATH=/opt/ic-deps/lib
 Restart=always
 RestartSec=3
