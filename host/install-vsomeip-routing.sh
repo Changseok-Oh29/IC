@@ -20,6 +20,9 @@ REPO_PATH="$(cd "$(dirname "$0")/.." && pwd)"
 echo "[install] Creating directories..."
 sudo mkdir -p /opt/ic-deps/bin /opt/ic-deps/lib
 
+echo "[install] Stopping vsomeip-routing if running..."
+sudo systemctl stop vsomeip-routing 2>/dev/null || true
+
 echo "[install] Extracting routingmanagerd from ic-deps image..."
 docker run --rm \
     -v /opt/ic-deps:/target \
