@@ -50,4 +50,4 @@ services:
       - /run/user/${UID:-1000}:/run/user/${UID:-1000}
       - /tmp:/tmp                  # share vsomeip Unix sockets with host routingmanagerd
 
-    restart: unless-stopped
+    restart: no
