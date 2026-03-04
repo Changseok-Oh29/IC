@@ -41,6 +41,7 @@ sed "s|__REPO_PATH__|${REPO_PATH}|g" host/vsomeip-routing.service | \
 
 # ── 3. Static ethernet IP via netplan ────────────────────────────────────────
 echo "[install] Setting static IP 192.168.1.101 on enP8p1s0..."
+sudo mkdir -p /etc/netplan
 sudo tee /etc/netplan/10-ic-eth.yaml > /dev/null << 'EOF'
 network:
   version: 2
