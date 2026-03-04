@@ -8,8 +8,7 @@
 # What this does:
 #   1. Extracts routingmanagerd from ic-deps Docker image to host
 #   2. Installs vsomeip-routing systemd service
-#   3. Sets static IP 192.168.1.101 on enP8p1s0 (netplan)
-#   4. Installs SOME/IP multicast route as a systemd service
+#   3. Sets static IP 192.168.1.101 + SOME/IP multicast route (systemd service)
 # ─────────────────────────────────────────────────────────────────────────────
 
 set -e
@@ -39,29 +38,16 @@ echo "[install] Installing vsomeip-routing service..."
 sed "s|__REPO_PATH__|${REPO_PATH}|g" host/vsomeip-routing.service | \
     sudo tee /etc/systemd/system/vsomeip-routing.service > /dev/null
 
-# ── 3. Static ethernet IP via netplan ────────────────────────────────────────
-echo "[install] Setting static IP 192.168.1.101 on enP8p1s0..."
-sudo mkdir -p /etc/netplan
-sudo tee /etc/netplan/10-ic-eth.yaml > /dev/null << 'EOF'
-network:
-  version: 2
-  ethernets:
-    enP8p1s0:
-      addresses:
-        - 192.168.1.101/24
-EOF
-sudo chmod 600 /etc/netplan/10-ic-eth.yaml
-sudo netplan apply
-
-# ── 4. SOME/IP multicast route systemd service ────────────────────────────────
-echo "[install] Installing multicast route service..."
-sudo tee /etc/systemd/system/ic-multicast-route.service > /dev/null << 'EOF'
+# ── 3. Static ethernet IP + multicast route as systemd services ──────────────
+echo "[install] Installing ic-eth-setup service (IP + multicast route)..."
+sudo tee /etc/systemd/system/ic-eth-setup.service > /dev/null << 'EOF'
 [Unit]
-Description=SOME/IP multicast route for IC cluster
+Description=IC cluster ethernet setup (static IP + SOME/IP multicast route)
 After=network.target
 
 [Service]
 Type=oneshot
+ExecStart=/sbin/ip addr add 192.168.1.101/24 dev enP8p1s0
 ExecStart=/sbin/ip route add 224.0.0.0/4 dev enP8p1s0
 RemainAfterExit=yes
 
@@ -69,9 +55,9 @@ RemainAfterExit=yes
 WantedBy=multi-user.target
 EOF
 
-# ── 5. Enable all services ────────────────────────────────────────────────────
+# ── 4. Enable all services ────────────────────────────────────────────────────
 sudo systemctl daemon-reload
-sudo systemctl enable --now ic-multicast-route.service
+sudo systemctl enable --now ic-eth-setup.service
 sudo systemctl enable vsomeip-routing
 
 echo ""
