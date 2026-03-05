@@ -60,7 +60,7 @@ Window {
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.horizontalCenterOffset: -4
                     anchors.bottom: parent.bottom
-                    anchors.bottomMargin: 36
+                    anchors.bottomMargin: 40
                     z: 1
 
                     color: {
