@@ -55,11 +55,11 @@ Window {
                 // Battery fill rectangle (grows from bottom)
                 Rectangle {
                     id: battery_fill
-                    width: 56
-                    height: 95 * batterySection.batteryLevel / 100
+                    width: 68
+                    height: 115 * batterySection.batteryLevel / 100
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.bottom: parent.bottom
-                    anchors.bottomMargin: 40
+                    anchors.bottomMargin: 36
                     z: 1
 
                     color: {
@@ -101,8 +101,8 @@ Window {
                 Image {
                     id: bolt_icon
                     anchors.centerIn: parent
-                    width: 36
-                    height: 36
+                    width: 64
+                    height: 64
                     source: "qrc:/images/bolt_icon.png"
                     fillMode: Image.PreserveAspectFit
                     visible: batterySection.isCharging
