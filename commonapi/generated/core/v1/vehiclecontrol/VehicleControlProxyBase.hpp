@@ -38,18 +38,18 @@ class VehicleControlProxyBase
     : virtual public CommonAPI::Proxy {
 public:
     typedef CommonAPI::Event<
-        std::string, uint16_t, uint8_t, uint64_t
+        std::string, uint16_t, uint16_t, int16_t, uint64_t
     > VehicleStateChangedEvent;
     typedef CommonAPI::Event<
-        std::string, std::string, uint64_t
-    > GearChangedEvent;
+        std::string, std::string, uint16_t, uint64_t
+    > GearDistanceChangedEvent;
 
     typedef std::function<void(const CommonAPI::CallStatus&, const bool&)> SetGearPositionAsyncCallback;
 
     virtual void setGearPosition(std::string _gear, CommonAPI::CallStatus &_internalCallStatus, bool &_success, const CommonAPI::CallInfo *_info = nullptr) = 0;
     virtual std::future<CommonAPI::CallStatus> setGearPositionAsync(const std::string &_gear, SetGearPositionAsyncCallback _callback = nullptr, const CommonAPI::CallInfo *_info = nullptr) = 0;
     virtual VehicleStateChangedEvent& getVehicleStateChangedEvent() = 0;
-    virtual GearChangedEvent& getGearChangedEvent() = 0;
+    virtual GearDistanceChangedEvent& getGearDistanceChangedEvent() = 0;
 
     virtual std::future<void> getCompletionFuture() = 0;
 };

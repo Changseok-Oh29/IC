@@ -56,7 +56,7 @@ public:
 
     virtual VehicleStateChangedEvent& getVehicleStateChangedEvent();
 
-    virtual GearChangedEvent& getGearChangedEvent();
+    virtual GearDistanceChangedEvent& getGearDistanceChangedEvent();
 
     virtual void setGearPosition(std::string _gear, CommonAPI::CallStatus &_internalCallStatus, bool &_success, const CommonAPI::CallInfo *_info);
 
@@ -67,8 +67,8 @@ public:
     virtual std::future<void> getCompletionFuture();
 
 private:
-    CommonAPI::SomeIP::Event<VehicleStateChangedEvent, CommonAPI::Deployable< std::string, CommonAPI::SomeIP::StringDeployment >, CommonAPI::Deployable< uint16_t, CommonAPI::SomeIP::IntegerDeployment<uint16_t> >, CommonAPI::Deployable< uint8_t, CommonAPI::SomeIP::IntegerDeployment<uint8_t> >, CommonAPI::Deployable< uint64_t, CommonAPI::SomeIP::IntegerDeployment<uint64_t> >> vehicleStateChanged_;
-    CommonAPI::SomeIP::Event<GearChangedEvent, CommonAPI::Deployable< std::string, CommonAPI::SomeIP::StringDeployment >, CommonAPI::Deployable< std::string, CommonAPI::SomeIP::StringDeployment >, CommonAPI::Deployable< uint64_t, CommonAPI::SomeIP::IntegerDeployment<uint64_t> >> gearChanged_;
+    CommonAPI::SomeIP::Event<VehicleStateChangedEvent, CommonAPI::Deployable< std::string, CommonAPI::SomeIP::StringDeployment >, CommonAPI::Deployable< uint16_t, CommonAPI::SomeIP::IntegerDeployment<uint16_t> >, CommonAPI::Deployable< uint16_t, CommonAPI::SomeIP::IntegerDeployment<uint16_t> >, CommonAPI::Deployable< int16_t, CommonAPI::SomeIP::IntegerDeployment<int16_t> >, CommonAPI::Deployable< uint64_t, CommonAPI::SomeIP::IntegerDeployment<uint64_t> >> vehicleStateChanged_;
+    CommonAPI::SomeIP::Event<GearDistanceChangedEvent, CommonAPI::Deployable< std::string, CommonAPI::SomeIP::StringDeployment >, CommonAPI::Deployable< std::string, CommonAPI::SomeIP::StringDeployment >, CommonAPI::Deployable< uint16_t, CommonAPI::SomeIP::IntegerDeployment<uint16_t> >, CommonAPI::Deployable< uint64_t, CommonAPI::SomeIP::IntegerDeployment<uint64_t> >> gearDistanceChanged_;
 
     std::promise<void> completed_;
 };

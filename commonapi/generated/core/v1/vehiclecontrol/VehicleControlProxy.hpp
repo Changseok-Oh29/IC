@@ -96,10 +96,10 @@ public:
         return delegate_->getVehicleStateChangedEvent();
     }
     /**
-     * Returns the wrapper class that provides access to the broadcast gearChanged.
+     * Returns the wrapper class that provides access to the broadcast gearDistanceChanged.
      */
-    virtual GearChangedEvent& getGearChangedEvent() {
-        return delegate_->getGearChangedEvent();
+    virtual GearDistanceChangedEvent& getGearDistanceChangedEvent() {
+        return delegate_->getGearDistanceChangedEvent();
     }
 
 

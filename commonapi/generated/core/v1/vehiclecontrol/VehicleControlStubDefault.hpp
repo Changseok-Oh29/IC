@@ -66,11 +66,11 @@ public:
         bool success = false;
         _reply(success);
     }
-    COMMONAPI_EXPORT virtual void fireVehicleStateChangedEvent(const std::string &_gear, const uint16_t &_speed, const uint8_t &_batteryLevel, const uint64_t &_timestamp) {
-        VehicleControlStub::fireVehicleStateChangedEvent(_gear, _speed, _batteryLevel, _timestamp);
+    COMMONAPI_EXPORT virtual void fireVehicleStateChangedEvent(const std::string &_gear, const uint16_t &_speed, const uint16_t &_voltage, const int16_t &_current, const uint64_t &_timestamp) {
+        VehicleControlStub::fireVehicleStateChangedEvent(_gear, _speed, _voltage, _current, _timestamp);
     }
-    COMMONAPI_EXPORT virtual void fireGearChangedEvent(const std::string &_newGear, const std::string &_oldGear, const uint64_t &_timestamp) {
-        VehicleControlStub::fireGearChangedEvent(_newGear, _oldGear, _timestamp);
+    COMMONAPI_EXPORT virtual void fireGearDistanceChangedEvent(const std::string &_newGear, const std::string &_oldGear, const uint16_t &_distance, const uint64_t &_timestamp) {
+        VehicleControlStub::fireGearDistanceChangedEvent(_newGear, _oldGear, _distance, _timestamp);
     }
 
 

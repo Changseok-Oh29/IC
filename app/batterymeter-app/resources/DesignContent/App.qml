@@ -15,8 +15,9 @@ Window {
         id: batterySection
         anchors.fill: parent
         
-        // Bind to vehicleClient batteryLevel
+        // Bind to vehicleClient batteryLevel and charging state
         property int batteryLevel: vehicleClient.batteryLevel
+        property bool isCharging: vehicleClient.isCharging
         
         // Gauge container (centered)
         Item {
@@ -54,11 +55,11 @@ Window {
                 // Battery fill rectangle (grows from bottom)
                 Rectangle {
                     id: battery_fill
-                    width: 68
-                    height: 110 * batterySection.batteryLevel / 100
+                    width: 56
+                    height: 95 * batterySection.batteryLevel / 100
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.bottom: parent.bottom
-                    anchors.bottomMargin: 35
+                    anchors.bottomMargin: 40
                     z: 1
 
                     color: {
@@ -96,7 +97,19 @@ Window {
                     z: 2
                 }
 
-                // Battery percentage text (centered on icon)
+                // Bolt icon shown when charging (current > 100mA)
+                Image {
+                    id: bolt_icon
+                    anchors.centerIn: parent
+                    width: 36
+                    height: 36
+                    source: "qrc:/images/bolt_icon.png"
+                    fillMode: Image.PreserveAspectFit
+                    visible: batterySection.isCharging
+                    z: 4
+                }
+
+                // Battery percentage text (hidden when charging)
                 Text {
                     id: battery_text
                     anchors.centerIn: parent
@@ -104,6 +117,7 @@ Window {
                     font: Constants.batteryPercentFont
                     color: Constants.textColor
                     text: batterySection.batteryLevel + "%"
+                    visible: !batterySection.isCharging
                     z: 3
                 }
             }

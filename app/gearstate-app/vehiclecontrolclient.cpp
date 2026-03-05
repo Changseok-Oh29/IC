@@ -83,15 +83,15 @@ void VehicleControlClient::setupEventSubscriptions()
 
     // Subscribe to vehicleStateChanged event
     m_proxy->getVehicleStateChangedEvent().subscribe(
-        [this](std::string gear, uint16_t speed, uint8_t battery, uint64_t timestamp) {
-            this->onVehicleStateChanged(gear, speed, battery, timestamp);
+        [this](std::string gear, uint16_t speed, uint16_t voltage, int16_t current, uint64_t timestamp) {
+            this->onVehicleStateChanged(gear, speed, voltage, current, timestamp);
         }
     );
 
     qDebug() << "✅ Event subscriptions setup complete";
 }
 
-void VehicleControlClient::onVehicleStateChanged(std::string gear, uint16_t speed, uint8_t battery, uint64_t timestamp)
+void VehicleControlClient::onVehicleStateChanged(std::string gear, uint16_t speed, uint16_t voltage, int16_t current, uint64_t timestamp)
 {
     // Update gear state
     QString newGear = QString::fromStdString(gear);
@@ -107,12 +107,6 @@ void VehicleControlClient::onVehicleStateChanged(std::string gear, uint16_t spee
     if (m_speed != speed) {
         m_speed = speed;
         emit speedChanged(m_speed);
-    }
-
-    // Update battery level
-    if (m_batteryLevel != battery) {
-        m_batteryLevel = battery;
-        emit batteryLevelChanged(m_batteryLevel);
     }
 }
 

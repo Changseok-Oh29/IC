@@ -2,11 +2,14 @@
 #include <QDebug>
 #include <QDateTime>
 #include <functional>
+#include <algorithm>
 
 VehicleControlClient::VehicleControlClient(QObject *parent)
     : QObject(parent)
     , m_batteryLevel(0)
+    , m_isCharging(false)
     , m_serviceAvailable(false)
+    , m_filteredVoltage(0.0f)
 {
     qDebug() << "VehicleControlClient (BatteryMeter) created";
     
@@ -81,26 +84,45 @@ void VehicleControlClient::setupEventSubscriptions()
     
     // Subscribe to vehicleStateChanged event
     m_proxy->getVehicleStateChangedEvent().subscribe(
-        [this](std::string gear, uint16_t speed, uint8_t battery, uint64_t timestamp) {
-            this->onVehicleStateChanged(gear, speed, battery, timestamp);
+        [this](std::string gear, uint16_t speed, uint16_t voltage, int16_t current, uint64_t timestamp) {
+            this->onVehicleStateChanged(gear, speed, voltage, current, timestamp);
         }
     );
     
     qDebug() << "✅ Event subscriptions setup complete";
 }
 
-void VehicleControlClient::onVehicleStateChanged(std::string gear, uint16_t speed, uint8_t battery, uint64_t timestamp)
+void VehicleControlClient::onVehicleStateChanged(std::string gear, uint16_t speed, uint16_t voltage, int16_t current, uint64_t timestamp)
 {
-    // Update battery level
-    if (m_batteryLevel != battery) {
-        m_batteryLevel = battery;
+    // EMA filter on voltage (alpha=0.1 → smooth, slow to react)
+    float voltageV = voltage / 1000.0f;
+    if (m_filteredVoltage == 0.0f)
+        m_filteredVoltage = voltageV;  // Initialize on first reading
+    else
+        m_filteredVoltage = 0.1f * voltageV + 0.9f * m_filteredVoltage;
+
+    // Convert filtered voltage to percentage (3S LiPo: 9.0V=0%, 12.6V=100%)
+    float pct = (m_filteredVoltage - 9.0f) / (12.6f - 9.0f) * 100.0f;
+    int newLevel = static_cast<int>(std::clamp(pct, 0.0f, 100.0f));
+
+    // 2% dead zone: only update if change is significant (prevents integer boundary flickering)
+    if (abs(newLevel - m_batteryLevel) >= 2) {
+        m_batteryLevel = newLevel;
         emit batteryLevelChanged(m_batteryLevel);
-        
-        qDebug() << "📡 [Event] vehicleStateChanged:"
-                 << "Gear:" << QString::fromStdString(gear)
-                 << "Speed:" << speed << "km/h"
-                 << "Battery:" << m_batteryLevel << "%";
     }
+
+    // Charging detection: current > 100mA = charging
+    bool charging = (current > 100);
+    if (m_isCharging != charging) {
+        m_isCharging = charging;
+        emit isChargingChanged(m_isCharging);
+    }
+
+    qDebug() << "📡 [Event] vehicleStateChanged:"
+             << "Voltage:" << voltage << "mV"
+             << "Current:" << current << "mA"
+             << "Battery:" << m_batteryLevel << "%"
+             << "Charging:" << m_isCharging;
 }
 
 void VehicleControlClient::onAvailabilityChanged(CommonAPI::AvailabilityStatus status)

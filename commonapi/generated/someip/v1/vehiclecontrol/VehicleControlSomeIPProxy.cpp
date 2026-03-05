@@ -47,8 +47,8 @@ VehicleControlSomeIPProxy::VehicleControlSomeIPProxy(
     const CommonAPI::SomeIP::Address &_address,
     const std::shared_ptr<CommonAPI::SomeIP::ProxyConnection> &_connection)
         : CommonAPI::SomeIP::Proxy(_address, _connection),
-          vehicleStateChanged_(*this, 0x1234, CommonAPI::SomeIP::event_id_t(0x9c40), CommonAPI::SomeIP::event_type_e::ET_EVENT , CommonAPI::SomeIP::reliability_type_e::RT_UNRELIABLE, false, std::make_tuple(static_cast< CommonAPI::SomeIP::StringDeployment* >(nullptr), static_cast< CommonAPI::SomeIP::IntegerDeployment<uint16_t>* >(nullptr), static_cast< CommonAPI::SomeIP::IntegerDeployment<uint8_t>* >(nullptr), static_cast< CommonAPI::SomeIP::IntegerDeployment<uint64_t>* >(nullptr))),
-          gearChanged_(*this, 0x1234, CommonAPI::SomeIP::event_id_t(0x9c41), CommonAPI::SomeIP::event_type_e::ET_EVENT , CommonAPI::SomeIP::reliability_type_e::RT_UNRELIABLE, false, std::make_tuple(static_cast< CommonAPI::SomeIP::StringDeployment* >(nullptr), static_cast< CommonAPI::SomeIP::StringDeployment* >(nullptr), static_cast< CommonAPI::SomeIP::IntegerDeployment<uint64_t>* >(nullptr)))
+          vehicleStateChanged_(*this, 0x1234, CommonAPI::SomeIP::event_id_t(0x9c40), CommonAPI::SomeIP::event_type_e::ET_EVENT , CommonAPI::SomeIP::reliability_type_e::RT_UNRELIABLE, false, std::make_tuple(static_cast< CommonAPI::SomeIP::StringDeployment* >(nullptr), static_cast< CommonAPI::SomeIP::IntegerDeployment<uint16_t>* >(nullptr), static_cast< CommonAPI::SomeIP::IntegerDeployment<uint16_t>* >(nullptr), static_cast< CommonAPI::SomeIP::IntegerDeployment<int16_t>* >(nullptr), static_cast< CommonAPI::SomeIP::IntegerDeployment<uint64_t>* >(nullptr))),
+          gearDistanceChanged_(*this, 0x1234, CommonAPI::SomeIP::event_id_t(0x9c41), CommonAPI::SomeIP::event_type_e::ET_EVENT , CommonAPI::SomeIP::reliability_type_e::RT_UNRELIABLE, false, std::make_tuple(static_cast< CommonAPI::SomeIP::StringDeployment* >(nullptr), static_cast< CommonAPI::SomeIP::StringDeployment* >(nullptr), static_cast< CommonAPI::SomeIP::IntegerDeployment<uint16_t>* >(nullptr), static_cast< CommonAPI::SomeIP::IntegerDeployment<uint64_t>* >(nullptr)))
 {
 }
 
@@ -60,8 +60,8 @@ VehicleControlSomeIPProxy::~VehicleControlSomeIPProxy() {
 VehicleControlSomeIPProxy::VehicleStateChangedEvent& VehicleControlSomeIPProxy::getVehicleStateChangedEvent() {
     return vehicleStateChanged_;
 }
-VehicleControlSomeIPProxy::GearChangedEvent& VehicleControlSomeIPProxy::getGearChangedEvent() {
-    return gearChanged_;
+VehicleControlSomeIPProxy::GearDistanceChangedEvent& VehicleControlSomeIPProxy::getGearDistanceChangedEvent() {
+    return gearDistanceChanged_;
 }
 
 void VehicleControlSomeIPProxy::setGearPosition(std::string _gear, CommonAPI::CallStatus &_internalCallStatus, bool &_success, const CommonAPI::CallInfo *_info) {

@@ -19,7 +19,8 @@ interface VehicleControl {
         out {
             String gear
             UInt16 speed
-            UInt8 batteryLevel
+            UInt16 voltage      // Battery voltage in mV (e.g. 11500 = 11.5V)
+            Int16 current       // Battery current in mA
             UInt64 timestamp
         }
     }

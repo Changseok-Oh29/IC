@@ -35,7 +35,7 @@ QtObject {
     
     readonly property font batteryPercentFont: Qt.font({
         family: "Arial",
-        pixelSize: 25,
+        pixelSize: 16,
         bold: true
     })
 }

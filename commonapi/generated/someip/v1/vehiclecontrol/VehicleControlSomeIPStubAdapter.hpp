@@ -46,9 +46,9 @@ public:
         VehicleControlSomeIPStubAdapterHelper::deinit();
     }
 
-    void fireVehicleStateChangedEvent(const std::string &_gear, const uint16_t &_speed, const uint8_t &_batteryLevel, const uint64_t &_timestamp);
+    void fireVehicleStateChangedEvent(const std::string &_gear, const uint16_t &_speed, const uint16_t &_voltage, const int16_t &_current, const uint64_t &_timestamp);
 
-    void fireGearChangedEvent(const std::string &_newGear, const std::string &_oldGear, const uint64_t &_timestamp);
+    void fireGearDistanceChangedEvent(const std::string &_newGear, const std::string &_oldGear, const uint16_t &_distance, const uint64_t &_timestamp);
 
     void deactivateManagedInstances() {}
     
@@ -104,14 +104,16 @@ public:
 };
 
 template <typename _Stub, typename... _Stubs>
-void VehicleControlSomeIPStubAdapterInternal<_Stub, _Stubs...>::fireVehicleStateChangedEvent(const std::string &_gear, const uint16_t &_speed, const uint8_t &_batteryLevel, const uint64_t &_timestamp) {
+void VehicleControlSomeIPStubAdapterInternal<_Stub, _Stubs...>::fireVehicleStateChangedEvent(const std::string &_gear, const uint16_t &_speed, const uint16_t &_voltage, const int16_t &_current, const uint64_t &_timestamp) {
     CommonAPI::Deployable< std::string, CommonAPI::SomeIP::StringDeployment> deployed_gear(_gear, static_cast< CommonAPI::SomeIP::StringDeployment* >(nullptr));
     CommonAPI::Deployable< uint16_t, CommonAPI::SomeIP::IntegerDeployment<uint16_t>> deployed_speed(_speed, static_cast< CommonAPI::SomeIP::IntegerDeployment<uint16_t>* >(nullptr));
-    CommonAPI::Deployable< uint8_t, CommonAPI::SomeIP::IntegerDeployment<uint8_t>> deployed_batteryLevel(_batteryLevel, static_cast< CommonAPI::SomeIP::IntegerDeployment<uint8_t>* >(nullptr));
+    CommonAPI::Deployable< uint16_t, CommonAPI::SomeIP::IntegerDeployment<uint16_t>> deployed_voltage(_voltage, static_cast< CommonAPI::SomeIP::IntegerDeployment<uint16_t>* >(nullptr));
+    CommonAPI::Deployable< int16_t, CommonAPI::SomeIP::IntegerDeployment<int16_t>> deployed_current(_current, static_cast< CommonAPI::SomeIP::IntegerDeployment<int16_t>* >(nullptr));
     CommonAPI::Deployable< uint64_t, CommonAPI::SomeIP::IntegerDeployment<uint64_t>> deployed_timestamp(_timestamp, static_cast< CommonAPI::SomeIP::IntegerDeployment<uint64_t>* >(nullptr));
     CommonAPI::SomeIP::StubEventHelper<CommonAPI::SomeIP::SerializableArguments<  CommonAPI::Deployable< std::string, CommonAPI::SomeIP::StringDeployment > 
     ,  CommonAPI::Deployable< uint16_t, CommonAPI::SomeIP::IntegerDeployment<uint16_t> > 
-    ,  CommonAPI::Deployable< uint8_t, CommonAPI::SomeIP::IntegerDeployment<uint8_t> > 
+    ,  CommonAPI::Deployable< uint16_t, CommonAPI::SomeIP::IntegerDeployment<uint16_t> > 
+    ,  CommonAPI::Deployable< int16_t, CommonAPI::SomeIP::IntegerDeployment<int16_t> > 
     ,  CommonAPI::Deployable< uint64_t, CommonAPI::SomeIP::IntegerDeployment<uint64_t> > 
     >>
         ::sendEvent(
@@ -120,18 +122,21 @@ void VehicleControlSomeIPStubAdapterInternal<_Stub, _Stubs...>::fireVehicleState
             false,
              deployed_gear 
             ,  deployed_speed 
-            ,  deployed_batteryLevel 
+            ,  deployed_voltage 
+            ,  deployed_current 
             ,  deployed_timestamp 
     );
 }
 
 template <typename _Stub, typename... _Stubs>
-void VehicleControlSomeIPStubAdapterInternal<_Stub, _Stubs...>::fireGearChangedEvent(const std::string &_newGear, const std::string &_oldGear, const uint64_t &_timestamp) {
+void VehicleControlSomeIPStubAdapterInternal<_Stub, _Stubs...>::fireGearDistanceChangedEvent(const std::string &_newGear, const std::string &_oldGear, const uint16_t &_distance, const uint64_t &_timestamp) {
     CommonAPI::Deployable< std::string, CommonAPI::SomeIP::StringDeployment> deployed_newGear(_newGear, static_cast< CommonAPI::SomeIP::StringDeployment* >(nullptr));
     CommonAPI::Deployable< std::string, CommonAPI::SomeIP::StringDeployment> deployed_oldGear(_oldGear, static_cast< CommonAPI::SomeIP::StringDeployment* >(nullptr));
+    CommonAPI::Deployable< uint16_t, CommonAPI::SomeIP::IntegerDeployment<uint16_t>> deployed_distance(_distance, static_cast< CommonAPI::SomeIP::IntegerDeployment<uint16_t>* >(nullptr));
     CommonAPI::Deployable< uint64_t, CommonAPI::SomeIP::IntegerDeployment<uint64_t>> deployed_timestamp(_timestamp, static_cast< CommonAPI::SomeIP::IntegerDeployment<uint64_t>* >(nullptr));
     CommonAPI::SomeIP::StubEventHelper<CommonAPI::SomeIP::SerializableArguments<  CommonAPI::Deployable< std::string, CommonAPI::SomeIP::StringDeployment > 
     ,  CommonAPI::Deployable< std::string, CommonAPI::SomeIP::StringDeployment > 
+    ,  CommonAPI::Deployable< uint16_t, CommonAPI::SomeIP::IntegerDeployment<uint16_t> > 
     ,  CommonAPI::Deployable< uint64_t, CommonAPI::SomeIP::IntegerDeployment<uint64_t> > 
     >>
         ::sendEvent(
@@ -140,6 +145,7 @@ void VehicleControlSomeIPStubAdapterInternal<_Stub, _Stubs...>::fireGearChangedE
             false,
              deployed_newGear 
             ,  deployed_oldGear 
+            ,  deployed_distance 
             ,  deployed_timestamp 
     );
 }
