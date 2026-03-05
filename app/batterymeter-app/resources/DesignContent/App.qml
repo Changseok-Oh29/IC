@@ -58,6 +58,7 @@ Window {
                     width: 68
                     height: 115 * batterySection.batteryLevel / 100
                     anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.horizontalCenterOffset: -4
                     anchors.bottom: parent.bottom
                     anchors.bottomMargin: 36
                     z: 1
