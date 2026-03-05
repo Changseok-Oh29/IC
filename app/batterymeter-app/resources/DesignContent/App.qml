@@ -102,6 +102,7 @@ Window {
                 Image {
                     id: bolt_icon
                     anchors.centerIn: parent
+                    anchors.horizontalCenterOffset: -4
                     width: 64
                     height: 64
                     source: "qrc:/images/bolt_icon.png"
@@ -114,6 +115,7 @@ Window {
                 Text {
                     id: battery_text
                     anchors.centerIn: parent
+                    anchors.horizontalCenterOffset: -4
                     anchors.verticalCenterOffset: -5
                     font: Constants.batteryPercentFont
                     color: Constants.textColor
