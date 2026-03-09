@@ -2,11 +2,13 @@
 #include <QDebug>
 #include <QDateTime>
 #include <functional>
+#include <cmath>
 
 VehicleControlClient::VehicleControlClient(QObject *parent)
     : QObject(parent)
     , m_gearState("P")
     , m_speed(0)
+    , m_filteredSpeed(0.0f)
     , m_batteryLevel(0)
     , m_serviceAvailable(false)
 {
@@ -100,13 +102,16 @@ void VehicleControlClient::onVehicleStateChanged(std::string gear, uint16_t spee
         emit gearStateChanged(m_gearState);
     }
 
-    // Update speed
-    if (m_speed != speed) {
-        m_speed = speed;
+    // Apply EMA filter to smooth speed (produces intermediate values between hardware steps)
+    m_filteredSpeed = SPEED_EMA_ALPHA * speed + (1.0f - SPEED_EMA_ALPHA) * m_filteredSpeed;
+    int smoothedSpeed = static_cast<int>(std::round(m_filteredSpeed));
+
+    if (m_speed != smoothedSpeed) {
+        m_speed = smoothedSpeed;
         emit speedChanged(m_speed);
 
         qDebug() << "📡 [Event] speedChanged:"
-                 << "Speed:" << m_speed << "km/h";
+                 << "raw:" << speed << "filtered:" << m_speed << "cm/s";
     }
 }
 

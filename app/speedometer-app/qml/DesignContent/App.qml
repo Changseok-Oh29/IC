@@ -105,7 +105,7 @@ Window {
     Connections {
         target: vehicleClient
         function onSpeedChanged() {
-            console.log("📡 Speed changed:", vehicleClient.speed, "km/h")
+            console.log("📡 Speed changed:", vehicleClient.speed, "cm/s")
         }
     }
 }

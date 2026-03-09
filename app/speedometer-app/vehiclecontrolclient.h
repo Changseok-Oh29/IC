@@ -52,8 +52,12 @@ private:
     // Current state
     QString m_gearState;
     int m_speed;
+    float m_filteredSpeed;
     int m_batteryLevel;
     bool m_serviceAvailable;
+
+    // EMA filter coefficient (0.0 = no update, 1.0 = no smoothing)
+    static constexpr float SPEED_EMA_ALPHA = 0.2f;
 
     // Event subscriptions
     void setupEventSubscriptions();
